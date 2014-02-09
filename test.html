@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <title>Editable Content Test</title>
+
+    <script language="JavaScript" src="richtext.js"></script>
+
+    <script type="text/javascript">
+
+        function test()
+        {
+            // Set it to use whatever browser you are testing in
+            this.edit = new EditableWebkit();
+            //this.edit = new EditableGecko();
+            //this.edit = new EditableIE();
+        }
+
+        function editOn()
+        {
+            edit.editableOn(document.getElementById("contentNode"));
+        }
+
+    </script>
+
+    <style type="text/css">
+
+        #contentNode:first-letter
+        {
+            font-size:200%;
+        }
+
+        #contentNode
+        {
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+    </style>
+</head>
+
+<body onload="test()">
+<br/>
+<br/>
+<br/>
+<div style="width:500px;border:0px solid black;padding:0px;">
+    <div id="contentNode" style="border:0px solid black;padding:0px;">
+        After turning editing on with the button below this element will now become editable and you can 
+        execute editing commands against it. Pressing the command state check button will print out the current
+        context of your selection in your debug console.
+    </div>
+</div>
+    <br/><br/><br/>
+    <input type="button" onclick="editOn()" value="Editable On" />
+    <input type="button" onclick="edit.editableOff()" value="Editable Off" /><br/>
+    <input type="button" onclick="edit.execCommand('bold')" value="Bold" />
+    <input type="button" onclick="edit.execCommand('italic')" value="Italic" />
+    <input type="button" onclick="edit.execCommand('underline')" value="Underline" /><br/>
+    <input type="button" onclick="edit.checkCommandState()" value="Command State Check" /><br/>
+</body>
+</html>
