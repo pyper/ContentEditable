@@ -1,7 +1,7 @@
 /**
 * Class files for normalizing rich text editing in "A-Grade" browsers.
 *
-* Christopher Pyper 2007
+* Christopher Pyper
 *
 **/
 
@@ -24,7 +24,7 @@ function convertColor(v)
     // Returns the hex representation of one byte (2 digits)
     function hex(d) {
         return (d < 16) ? ("0" + d.toString(16)) : d.toString(16);
-    };
+    }
 
     if (typeof v == "number") {
         var r = v & 0xFF;
@@ -49,7 +49,7 @@ function convertColor(v)
     }
 
     return null;
-};
+}
 
 // Launch window if not existing and add message
 function debug(message, level)
@@ -113,7 +113,7 @@ var EditableBase = function()
             return true;
         debug("checkNodeType() : Incorrect element type");
         return false;
-    };  
+    };
     
     // Exec a command
     this.execCommand = function(command)
@@ -128,7 +128,7 @@ var EditableBase = function()
         var ret = this.doc.execCommand(command, false, false);
         
         // Call any function pre-exec functionality, such as updating a selection range
-        this.postExecCommand()
+        this.postExecCommand();
         
         // Check if command state has changed
         this.checkCommandState();
@@ -136,10 +136,10 @@ var EditableBase = function()
         return ret;
     };
     
-    // Overridden in sub class to define any browser specific pre-exec command functionality, such as re-selecting a range
+    // Overridden define any browser specific pre-exec command functionality, such as re-selecting range
     this.preExecCommand = function(){};
     
-    // Overridden in sub class to define any browser specific post-exec command functionality, such as updating a selection range
+    // Overridden to define any browser specific post-exec command functionality, such as updating a selection range
     this.postExecCommand = function(){};
         
     // Set callback function for command state change callback
@@ -154,7 +154,7 @@ var EditableBase = function()
         if(!this.doc || !this.node)
             return false;
                     
-        var commandArray = new Array();
+        var commandArray = [];
             
         for(var i in this.commands)
         {
@@ -206,7 +206,7 @@ var EditableBase = function()
         {
             this.cachedCommandArray = commandArray;
             this.stateChangeCallback(this.cachedCommandArray);
-        }   
+        }
         
         return true;
     };
@@ -237,7 +237,7 @@ var EditableGecko = function()
     this.editableOn = function(node)
     {
         if(!this.checkNodeType(node))
-            return false;       
+            return false;
         
         // Build Iframe
         this.iframe = document.createElement("iframe");
@@ -246,11 +246,11 @@ var EditableGecko = function()
         this.iframe.style.width = (node.style.width) ? node.style.width : "100%";
         this.iframe.style.height = (node.style.height) ? node.style.height : node.offsetHeight + "px";
         this.iframe.style.top = (node.style.top) ? node.style.top : this.iframe.style.top;
-        this.iframe.style.left = (node.style.left) ? node.style.left : this.iframe.style.left; 
+        this.iframe.style.left = (node.style.left) ? node.style.left : this.iframe.style.left;
         if(node.style.position)
         {
             this.iframe.style.position = node.style.position;
-            // Setting a position to static automatically ignores top and left attributes, so we don't need to change them
+            // Setting a position to static automatically ignores top and left attributes, so we don't change them
             node.style.position = "static";
         }
         this.iframe.style.border        = "none";
@@ -261,18 +261,18 @@ var EditableGecko = function()
         // Switch node with iframe
         clone = node.cloneNode(true);
         this.originalNode = node.cloneNode(true);
-        node.parentNode.replaceChild(this.iframe, node);    
+        node.parentNode.replaceChild(this.iframe, node);
     
-        // Add stub document to iframe write it in manually fo speed, a server GET request for a stub would take too long
-        this.iframe.contentWindow.document.open('text/html; charset="UTF-8"');  
+        // Add stub document to iframe write it in manually for speed, a server GET request for a stub would take long
+        this.iframe.contentWindow.document.open('text/html; charset="UTF-8"');
         // Copy over styles defined in docuemnt
         var styleText = "";
         if(document.getElementsByTagName('style'))
             styleText = "\n\n" + document.getElementsByTagName('style')[0].innerHTML + "\n\n";
         html =  "<html>" +
                 "<head>" +
-                "<style type='text/css'>\n" +               
-                "body,html {\n" + 
+                "<style type='text/css'>\n" +
+                "body,html {\n" +
                 "   background:transparent;\n" +
                 "   padding:0;\n" +
                 "   margin:0;\n" +
@@ -282,7 +282,7 @@ var EditableGecko = function()
                 "   left:0;\n" +
                 "   right:0;\n" +
                 "   position:fixed;\n" +
-                "}\n" +     
+                "}\n" +
                 "body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {\n" +
                 "   margin:0;\n" +
                 "   padding:0;\n" +
@@ -313,23 +313,23 @@ var EditableGecko = function()
                 "}\n" +
                 "abbr,acronym {\n" +
                 "   border:0;\n" +
-                "}\n" +             
+                "}\n" +
                 // Write in style text
-                styleText +             
+                styleText +
                 "</style>" +
-                "</head>" +             
-                // The <div> is important, otherwise a <br/> is inserted then removed when typed on causing a jerky movement
-                "<body><div></div></body>" +                
+                "</head>" +
+                // <div> is important, otherwise a <br/> is inserted then removed when typed in causing a jerky movement
+                "<body><div></div></body>" +
                 "</html>";
         this.iframe.contentWindow.document.write(html);
         this.iframe.contentWindow.document.close();
         
         // Append cloned node to new document in iframe
-        this.node = this.iframe.contentWindow.document.body.appendChild(clone); 
+        this.node = this.iframe.contentWindow.document.body.appendChild(clone);
         
         // Add style sheets to retain look
         for ( i = document.styleSheets.length - 1; i>=0; i-- )
-        {   
+        {
             var newLink = this.iframe.contentDocument.createElement("link");
             newLink.rel  = "stylesheet";
             newLink.type = "text/css";
@@ -351,8 +351,8 @@ var EditableGecko = function()
         this.iframe.contentWindow.document.addEventListener('mouseup', mozSignalIframeChange, true);
         this.iframe.contentWindow.addEventListener('resize', mozSignalIframeChange, true);
         
-        // Call update to smooth out any samll inconsisencies
-        this.update();  
+        // Call update to smooth out any ssmll inconsistencies
+        this.update();
     };
     
     // Overridden from base class, turn off editing for node
@@ -369,8 +369,10 @@ var EditableGecko = function()
             this.iframe.contentWindow.document.designMode = "off";
             
             // Straighten out properties
-            this.node.style.width = (this.originalNode.style.width) ? this.iframe.style.width : this.originalNode.style.width;              
-            this.node.style.height = (this.originalNode.style.height) ? this.iframe.style.height : this.originalNode.style.height;              
+            this.node.style.width = (this.originalNode.style.width) ?
+                this.iframe.style.width : this.originalNode.style.width;
+            this.node.style.height = (this.originalNode.style.height) ?
+                this.iframe.style.height : this.originalNode.style.height;
             this.node.style.position = this.iframe.style.position;
             this.node.style.top  = this.iframe.style.top;
             this.node.style.left = this.iframe.style.left;
@@ -381,7 +383,7 @@ var EditableGecko = function()
             // Clean up references
             this.iframe = null;
             this.node   = null;
-            this.doc    = null;         
+            this.doc    = null;
         }
     };
     
@@ -403,9 +405,9 @@ var EditableGecko = function()
     this.postExecCommand = function()
     {
         this.update();
-    }   
+    };
 };
-EditableGecko.prototype = new EditableBase;
+EditableGecko.prototype = new EditableBase();
 // For Resize Correction, only way to pull it off.  Can't seem to pass object reference using 'this' into iframe.
 // Keep function here becuase it is only used by class, if we put in class then we can't reference it from iframe
 var EditableGeckoRef = null;
@@ -434,7 +436,7 @@ function geckoReceiveIframeChange()
 **/
 var EditableWebkit = function()
 {
-    // Vars for holding shitty webkit equivalent to range, http://lists.apple.com/archives/Webcore-dev/2005/May/msg00007.html
+    // Vars for holding webkit equivalent to range, http://lists.apple.com/archives/Webcore-dev/2005/May/msg00007.html
     this.baseNode = null;
     this.baseOffset = null;
     this.extentNode = null;
@@ -479,18 +481,18 @@ var EditableWebkit = function()
         // Clean up references
         this.node = null;
         this.doc = null;
-    }   
+    };
     
     // Cache highlighted selection
     this.cacheSelection = function()
     {
         // Get Selection object, http://lists.apple.com/archives/Webcore-dev/2005/May/msg00007.html
-        var selection = window.getSelection();  
+        var selection = window.getSelection();
         this.baseNode     = selection.baseNode;
         this.baseOffset   = selection.baseOffset;
         this.extentNode   = selection.extentNode;
         this.extentOffset = selection.extentOffset;
-    }
+    };
     
     // Re-highlight previous cached selection
     this.highlightSelection = function()
@@ -508,7 +510,7 @@ var EditableWebkit = function()
         this.checkCommandState();
     };
     
-    // Overridden from base class, re-highlight selection as it is lost when the user clicks somewhere outside of selection
+    // Overridden from base class, re-highlight selection as it is lost when the user clicks outside of selection
     this.preExecCommand = function()
     {
         this.highlightSelection();
@@ -520,7 +522,7 @@ var EditableWebkit = function()
         this.update();
     };
 };
-EditableWebkit.prototype = new EditableBase;
+EditableWebkit.prototype = new EditableBase();
 
 // You cannot pass object methods by reference, this will act as reference to current object
 var editableWebkitRef = null;
@@ -586,8 +588,8 @@ var EditableIE = function()
         this.node.contentEditable = false;
         
         // Clean up references
-        this.node = null;       
-        this.doc = null;        
+        this.node = null;
+        this.doc = null;
     };
     
     // Cache highlighted selection
@@ -611,7 +613,7 @@ var EditableIE = function()
         // take the length of the text range and move there.  Thus you give the appearance that the whole
         // text range bug thing didn't happen without messing up existing highlight functionality.
         if(this.cachedInnerText != this.node.innerText && this.cachedRange && this.cachedRange.text.length >= 0)
-            this.cachedRange.moveStart("character", this.cachedRange.text.length);      
+            this.cachedRange.moveStart("character", this.cachedRange.text.length);
 
         // Re-select Range
         if(this.cachedRange)
@@ -625,7 +627,7 @@ var EditableIE = function()
         this.checkCommandState();
     };
     
-    // Overridden from base class, re-highlight selection as it is lost when the user clicks somewhere outside of selection
+    // Overridden from base class, re-highlight selection as it is lost when the user clicks outside of selection
     this.preExecCommand = function()
     {
         this.highlightSelection();
@@ -637,7 +639,7 @@ var EditableIE = function()
         this.update();
     };
 };
-EditableIE.prototype = new EditableBase;
+EditableIE.prototype = new EditableBase();
 
 // You cannot pass object methods by reference, this will act as reference to current object
 var editableIERef= null;
